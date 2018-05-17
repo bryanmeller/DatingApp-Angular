@@ -8,7 +8,6 @@ import { MemberEditComponent } from './members/member-edit/member-edit.component
 import { MemberListResolver } from './_resolvers/member-list.resolver';
 import { MemberDetailResolver } from './_resolvers/member-detail.resolver';
 import { MemberDetailComponent } from './members/member-detail/member-detail.component';
-import { AuthModule } from './auth/auth.module';
 import { MemberCardComponent } from './members/member-card/member-card.component';
 import { UserService } from './_services/user.service';
 import { AuthGuard } from './_guards/auth.guard';
@@ -32,6 +31,18 @@ import { MemberListComponent } from './members/member-list/member-list.component
 import { ListsComponent } from './lists/lists.component';
 import { MessagesComponent } from './messages/messages.component';
 import { FileUploadModule } from 'ng2-file-upload';
+import { JwtModule } from '@auth0/angular-jwt';
+import { HttpClientModule } from '@angular/common/http';
+import { ErrorInterceptorProvider } from './_services/error.interceptor';
+
+export function getAccessToken(): string {
+  return localStorage.getItem('token');
+}
+
+export const jwtConfig = {
+  tokenGetter: getAccessToken,
+  whiteListedDomains: ['localhost:60589']
+};
 
 @NgModule({
   declarations: [
@@ -56,13 +67,16 @@ import { FileUploadModule } from 'ng2-file-upload';
     ReactiveFormsModule,
     BsDropdownModule.forRoot(),
     RouterModule.forRoot(appRoutes),
-    AuthModule,
     TabsModule.forRoot(),
     NgxGalleryModule,
     FileUploadModule,
     BsDatepickerModule.forRoot(),
     PaginationModule.forRoot(),
-    ButtonsModule.forRoot()
+    ButtonsModule.forRoot(),
+    HttpClientModule,
+    JwtModule.forRoot({
+      config: jwtConfig
+    })
   ],
   providers: [
     AuthService,
@@ -74,7 +88,8 @@ import { FileUploadModule } from 'ng2-file-upload';
     MemberEditlResolver,
     PreventUnsavedChanges,
     ListsResolver,
-    MessagesResolver
+    MessagesResolver,
+    ErrorInterceptorProvider
   ],
   bootstrap: [AppComponent]
 })
